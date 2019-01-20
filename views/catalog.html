@@ -1,0 +1,11 @@
+{% extends "_layout.html" %}
+{% set active_page = "catalog" %}
+{% block content %}
+
+<h1>Привет Мир!</h1>
+{{product}}
+{% for item in items %}
+    <p>{{item.name}}</p>
+{% endfor %}
+
+{% endblock %}
