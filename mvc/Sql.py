@@ -40,7 +40,7 @@ class Type:
             return Type.String(size)
         if type is date:
             return Type.Date()
-        if type is datatime:
+        if type is datetime:
             return Type.Datetime()
          
     @staticmethod
@@ -58,3 +58,5 @@ class Type:
     @staticmethod   
     def Datetime():
         return 'DATETIME'
+
+

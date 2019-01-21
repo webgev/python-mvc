@@ -1,6 +1,17 @@
 from flask import jsonify, request, render_template
 from mvc.Errors import NotFound
 
+
+def methods(methods=None):
+    def my_decorator(function_to_decorate):
+        def the_wrapper_around_the_original_function(self, **data):
+            if not self.inner and request.method not in (methods or ["GET"]):
+                raise NotFound()
+            
+            return function_to_decorate(self, **data)
+        return the_wrapper_around_the_original_function
+    return my_decorator
+
 def private(function_to_decorate):
     def the_wrapper_around_the_original_function(self, *data):
         if self.inner == False:

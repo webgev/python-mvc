@@ -24,7 +24,7 @@ class Model:
             return False
      
         columns = columns or  self.table.GetColumns()
-        where = where.format(column_id=self.table.primary)
+        
         return SqlQuery(""" 
             select 
                 {columns}
@@ -49,9 +49,11 @@ class Model:
         )
         
     def _Read(self, id):
+        if not self.table:
+            return False
         where = """
             {column_id} = %s
-        """
+        """.format(column_id=self.table.primary)
         result = self._List(where=where, data=[id])
         return result[0] if result else None   
      

@@ -111,6 +111,3 @@ class Column:
             
         self.SetChange()
         return True
-        
-        
-    

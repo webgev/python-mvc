@@ -1,11 +1,15 @@
-from flask import Flask, jsonify, request, render_template, redirect
+from flask import Flask, jsonify, request, render_template, redirect, session
 import importlib
 import config
-from  mvc.Sql import Connect
 from basic_auth import requires_auth
 from mvc.Errors import NotFound
+import os
+from mvc.Auth import AuthManager
+from mvc.User import UserManager
+from mvc.Sql import Connect
 
 app = Flask(__name__, template_folder="views")
+
     
 @app.route('/auth')
 @requires_auth
@@ -16,8 +20,9 @@ def authorization():
 @app.route('/', defaults={'path': ''},  methods=['GET', 'POST'])
 @app.route('/<path:path>', methods=['GET', 'POST'])
 def index(path):
+    Connect.Connect()
+    init_session()
     try:
-        Connect.Connect()
         if not path:
             path = "Home"
         rout = path.split("/")
@@ -32,10 +37,15 @@ def index(path):
         Connect.CloseConnect()
         return "404 - no method" if result == False else result
     except NotFound as ex:
+        Connect.CloseConnect()
         if request.method == "GET":
             return render_template('404.html')
         else: 
             return jsonify(error = str(ex))
+    except Exception as ex:
+        Connect.CloseConnect()
+        raise ex
+
 def get_controller_class(controller):
     try:
         controller = upper(controller.lower()) + 'Controller'
@@ -58,5 +68,13 @@ def raise_error(ex):
     if config.debug:
         raise ex
 
+def init_session():
+    if AuthManager().IsAuth():
+        sid = request.cookies.get("sid")
+        user_id = sid.split("-")[0]
+        user_id = int(user_id, 16)
+        session['user_id'] = user_id
+
+app.secret_key = os.urandom(16)
 if __name__ == '__main__':
     app.run(debug=config.debug)

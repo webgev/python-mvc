@@ -1,0 +1,26 @@
+{% extends "_layout.html" %}
+{% set active_page = "catalog" %}
+{% block content %}
+
+<form method="POST" action="/auth/login" id="login">
+    <input type="text" name="login">
+    <input type="text" name="password">
+    <button type="submit">Enter</button>
+</form>
+<script type="text/javascript">
+    document.getElementById("login").onsubmit = function () {
+        var settings = {
+            "method": "POST",
+            "headers": {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            "body": JSON.stringify({"login": "admin","password": "admin"})
+        }
+        
+        
+        fetch('http://localhost:5000/auth/login', settings).then((r) => console.log(r))
+        return false
+    }
+</script>
+{% endblock %}
