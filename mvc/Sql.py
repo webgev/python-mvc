@@ -6,7 +6,7 @@ class Connect:
     @staticmethod
     def Connect():
         Connect.connect = pymysql.connect(
-            host='localhost',
+            host=config.host,
             user=config.user,
             password=config.password, 
             db=config.db,
