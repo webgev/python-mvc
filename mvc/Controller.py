@@ -1,6 +1,6 @@
 from flask import jsonify, request, render_template
 from mvc.Errors import NotFound
-
+from mvc.User import UserManager
 
 def methods(methods=None):
     def my_decorator(function_to_decorate):
@@ -69,6 +69,7 @@ class Controller:
             self.dops = list(p for p in path[3:] if p) if len(path) > 3 else []
 
     def View(self, page, **data):
-        return render_template(page, **data)
+        user = UserManager().GetCurrent() or {}
+        return render_template(page, user_name=user.get("name", ''), **data)
         
  

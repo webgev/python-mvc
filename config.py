@@ -1,9 +1,9 @@
 db       = "webgev_wg"
 user     = "webgev_wg"
 password = "webgev_wg"
-host     = "localhost"
+host     = "webgev.beget.tech"
 
 debug = True
 
-initDb = True
+initDb = False
 redis  = False

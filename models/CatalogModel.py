@@ -15,7 +15,7 @@ class CategoryModel(Model):
         {"name":"id", "type":int, "primary":True, "key":True},
         {"name":"name", "type":str},
     ]
-        
+
 class CatalogModel(Model):
     __product_model = ProductModel()
     __category_model = CategoryModel()

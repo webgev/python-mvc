@@ -59,13 +59,18 @@ class User:
         return False
 
     def GetCurrentUserId(self):
-        return session.Get('user_id')
+        return session.get('user_id')
 
     def GetUserRoles(self):
         return self.__userroles_model.GetUserRoles(user_id)
    
     def Find(self, **data):
         return self.__user_model.Find(**data)
+
+    def GetCurrent(self):
+        user_id = self.GetCurrentUserId()
+        if user_id:
+            return self.__user_model._Read(user_id)
 
 manager = None
 def UserManager(): 

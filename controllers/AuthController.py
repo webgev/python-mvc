@@ -1,6 +1,6 @@
 from mvc.Controller import Controller, api, param, methods
 from mvc.Auth import AuthManager
-from flask import make_response, jsonify
+from flask import make_response, jsonify, redirect
 
 class AuthController(Controller):
     def index(self):
@@ -13,8 +13,15 @@ class AuthController(Controller):
         sid = AuthManager().Authenticate(login, password)
 
         if sid:
-            resp = make_response(jsonify( result = sid ))
-            resp.set_cookie('sid', sid)
-            return resp
+            response = make_response(jsonify( result = sid ))
+            response.set_cookie('sid', sid)
+            return response
         else:
             return jsonify( result = False )
+
+
+    def exit(self):
+        AuthManager().Exit()
+        response = make_response(redirect('/'))
+        response.set_cookie('sid', '', expires=0)
+        return response

@@ -8,6 +8,8 @@ from mvc.Auth import AuthManager
 from mvc.User import UserManager
 from mvc.Sql import Connect
 
+from datetime import datetime
+
 app = Flask(__name__, template_folder="views")
 
     
@@ -20,6 +22,7 @@ def authorization():
 @app.route('/', defaults={'path': ''},  methods=['GET', 'POST'])
 @app.route('/<path:path>', methods=['GET', 'POST'])
 def index(path):
+    start = datetime.now()
     Connect.Connect()
     init_session()
     try:
@@ -35,6 +38,7 @@ def index(path):
         params = request.get_json() if request.method == "POST" else {}
         result = request_method(controller, rout[1].lower() if len(rout) > 1 and rout[1] else "index", **params)
         Connect.CloseConnect()
+        print( str(datetime.now() - start) )
         return "404 - no method" if result == False else result
     except NotFound as ex:
         Connect.CloseConnect()
@@ -74,6 +78,8 @@ def init_session():
         user_id = sid.split("-")[0]
         user_id = int(user_id, 16)
         session['user_id'] = user_id
+    else:
+        session.pop('user_id', '')
 
 app.secret_key = os.urandom(16)
 if __name__ == '__main__':

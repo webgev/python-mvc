@@ -1,5 +1,6 @@
 import config
 import pymysql.cursors
+from datetime import date, datetime
 
 class Connect:
     connect = None
@@ -27,7 +28,6 @@ def SqlQueryItem(query, *data):
     result = self.SqlQuery(query, data)
     return result[0] if result else None   
     
-from datetime import date, datetime
 
 class Type:
     @staticmethod

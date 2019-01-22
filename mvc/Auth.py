@@ -1,7 +1,7 @@
 from mvc.Model import Model
 from mvc.User import UserManager
 from flask import request
-
+from mvc.Sql import SqlQuery
 import uuid
 
 import config
@@ -10,7 +10,7 @@ from datetime import datetime
 class AuthModel(Model):
     def __init__(self):
         if config.redis:
-            self.__redis = True
+            pass
         else:
             self.columns = [
                 {"name":"session_id", "type":str, "primary":True},
@@ -20,12 +20,17 @@ class AuthModel(Model):
 
         super().__init__()
 
+    def Delete(self, sid):
+        if config.redis:
+            pass
+        else:
+            SqlQuery("delete from `Session` where `session_id` = %s ", [sid])
+
 class Auth():
     def __init__(self):
         self.__model = AuthModel()
 
     def Authenticate(self, login, password):
-
         user = UserManager().Find(login=login, password=password)
         if not user:
             return False
@@ -47,6 +52,16 @@ class Auth():
             return True
 
         return False
+
+    def Exit(self):
+        if config.redis:
+            pass
+        else:
+            sid = request.cookies.get("sid")
+            if not sid:
+                return
+
+            self.__model.Delete(sid)
 
 manager = None
 def AuthManager():
