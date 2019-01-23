@@ -8,7 +8,7 @@ class Table:
         self.name = name
         self.columns = {}
         
-    def AddColumn(self, name, type, primary=False, key=False, default="", is_null=False):
+    def AddColumn(self, name, type, primary=False, key=False, default="", is_null=False, size=None):
         self.columns[name] = Column(name, type, primary, key, default, is_null)
         if primary:
             self.primary = name

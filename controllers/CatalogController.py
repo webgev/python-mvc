@@ -6,6 +6,7 @@ from basic_auth import auth
 class CatalogController(Controller):
     model = None
     action = None
+    menu_name = "Catalog"
     
     def __init__(self):
         super().__init__() 

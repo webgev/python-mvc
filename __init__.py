@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, request, render_template, redirect, session
-import importlib
 import config
 from basic_auth import requires_auth
 from mvc.Errors import NotFound
@@ -7,6 +6,7 @@ import os
 from mvc.Auth import AuthManager
 from mvc.User import UserManager
 from mvc.Sql import Connect
+from controllers import controllers
 
 from datetime import datetime
 
@@ -53,8 +53,7 @@ def index(path):
 def get_controller_class(controller):
     try:
         controller = upper(controller.lower()) + 'Controller'
-        mod = importlib.import_module("controllers." + controller)
-        return getattr(mod, controller)
+        return controllers.get(controller)
     except ModuleNotFoundError as ex:
         raise NotFound()
         

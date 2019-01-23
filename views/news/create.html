@@ -1,0 +1,32 @@
+{% extends "_layout.html" %}
+{% block content %}
+
+<form action="/news/create.html" method="POST" id="create">
+    <input type="text" name="title" id="title">
+    <textarea name="text" id="text"></textarea>
+</form> 
+
+<script type="text/javascript">
+    document.getElementById("create").onsubmit = function () {
+        var settings = {
+            "method": "POST",
+            "headers": {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            "body": JSON.stringify({
+                "method": "news.create",
+                "params": {
+                    "title": document.getElementById("title").value,
+                    "text": document.getElementById("text").value
+                }
+            })
+        }
+        
+        
+        fetch('http://localhost:5000/api', settings).then(() => document.location.replace("/"))
+        return false
+    }
+</script>
+
+{%endblock%}

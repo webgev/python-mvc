@@ -86,4 +86,3 @@ class Model:
                     continue
             return False
         return True
-        

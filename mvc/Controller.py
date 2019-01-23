@@ -1,6 +1,7 @@
 from flask import jsonify, request, render_template
 from mvc.Errors import NotFound
 from mvc.User import UserManager
+from mvc.Menu import get_menu
 
 def methods(methods=None):
     def my_decorator(function_to_decorate):
@@ -56,9 +57,11 @@ def modelparam(name, model, require=None):
             return function_to_decorate(self, **data) 
         return the_wrapper_around_the_original_function
     return my_decorator
+
     
 class Controller:
     inner = False
+    controller = 'home'
     def __init__(self):
         path = request.path.split("/")
         path = list(filter(lambda a: a != '', path))
@@ -70,6 +73,4 @@ class Controller:
 
     def View(self, page, **data):
         user = UserManager().GetCurrent() or {}
-        return render_template(page, user_name=user.get("name", ''), **data)
-        
- 
+        return render_template(page, menu=get_menu(), active_page=self.controller, user_name=user.get("name", ''), **data)

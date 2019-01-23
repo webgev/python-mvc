@@ -1,0 +1,16 @@
+{% extends "_layout.html" %}
+{% block content %}
+
+<h1>News</h1>
+
+{% if news %}
+{% for item in news %}
+    <p>{{item.title}}</p>
+    <p>{{item.date}}</p>
+    <p>{{item.text}}</p>
+{% endfor %}
+{% else %}
+<p>Нет новостей</p>
+{%endif%}
+
+{% endblock %}

@@ -1,5 +1,4 @@
 {% extends "_layout.html" %}
-{% set active_page = "catalog" %}
 {% block content %}
 
 <form method="POST" action="/auth/login" id="login">
@@ -19,7 +18,7 @@
         }
         
         
-        fetch('http://localhost:5000/auth/login', settings).then((r) => console.log(r))
+        fetch('http://localhost:5000/auth/login', settings).then(() => document.location.replace("/"))
         return false
     }
 </script>
