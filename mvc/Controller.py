@@ -19,17 +19,6 @@ def private(function_to_decorate):
             raise NotFound()
         return function_to_decorate(self, *data) 
     return the_wrapper_around_the_original_function
-    
-def api(methods=None):
-    def my_decorator(function_to_decorate):
-        def the_wrapper_around_the_original_function(self, **data):
-            if not self.inner and request.method not in (methods or ["POST"]):
-                raise NotFound()
-            
-            result = function_to_decorate(self, **data)
-            return result if self.inner else jsonify( result = result )
-        return the_wrapper_around_the_original_function
-    return my_decorator
 
 def param(name, types, require=False):
     def my_decorator(function_to_decorate):
@@ -58,11 +47,18 @@ def modelparam(name, model, require=None):
         return the_wrapper_around_the_original_function
     return my_decorator
 
-    
+class ControllerApi:
+    inner = False
+
 class Controller:
     inner = False
     controller = 'home'
+    api = None
     def __init__(self):
+        if self.api:
+            self.api = self.api()
+            self.api.inner = True
+
         path = request.path.split("/")
         path = list(filter(lambda a: a != '', path))
         if path:

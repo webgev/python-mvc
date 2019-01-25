@@ -1,8 +1,9 @@
 from flask import Flask, jsonify, request, render_template, redirect, session
 import config
-from basic_auth import requires_auth
-from mvc.Errors import NotFound
 import os
+import log
+from basic_auth import requires_auth
+from mvc.Errors import NotFound, Warning
 from mvc.Auth import AuthManager
 from mvc.User import UserManager
 from mvc.Sql import Connect
@@ -18,9 +19,35 @@ app = Flask(__name__, template_folder="views")
 def authorization():
     return render_template('secret_page.html')
 
+@app.route('/api/', methods=['POST'])
+def api():
+    Connect.Connect()
+    init_session()
+    try:
+        body = request.get_json()
+        params = body["params"] 
+        controller_name, method = body["method"].split(".")
+        controller = get_controller_class(controller_name)
+        if not controller:
+            raise Warning("method not found")
+
+        if not hasattr(controller, "api"):
+            raise Warning("method not found")
+
+        api = getattr(controller, "api")
+        result = request_method(api(), method, **params)
+        Connect.CloseConnect()
+        log.LogMsg("вызов api метода: " + controller_name + "." +  method)
+        return jsonify(result = result)
+    except Exception as ex:
+        Connect.CloseConnect()
+        log.ErrorMsg(str(ex))
+        return jsonify(error = str(ex)), 500
+
+    return render_template('secret_page.html')
     
-@app.route('/', defaults={'path': ''},  methods=['GET', 'POST'])
-@app.route('/<path:path>', methods=['GET', 'POST'])
+@app.route('/', defaults={'path': ''},  methods=['GET'])
+@app.route('/<path:path>', methods=['GET'])
 def index(path):
     start = datetime.now()
     Connect.Connect()
@@ -35,17 +62,14 @@ def index(path):
             Connect.CloseConnect()
             return "404 - no controller"
         
-        params = request.get_json() if request.method == "POST" else {}
-        result = request_method(controller, rout[1].lower() if len(rout) > 1 and rout[1] else "index", **params)
+        method = rout[1].lower() if len(rout) > 1 and rout[1] else "index"
+        result = request_method(controller(), method.lower())
         Connect.CloseConnect()
         print( str(datetime.now() - start) )
         return "404 - no method" if result == False else result
     except NotFound as ex:
         Connect.CloseConnect()
-        if request.method == "GET":
-            return render_template('404.html')
-        else: 
-            return jsonify(error = str(ex))
+        return render_template('404.html')
     except Exception as ex:
         Connect.CloseConnect()
         raise ex
@@ -56,12 +80,13 @@ def get_controller_class(controller):
         return controllers.get(controller)
     except ModuleNotFoundError as ex:
         raise NotFound()
+
         
 def request_method(controller, method, **data):    
     try:
-        return getattr(controller(), method.lower())(**data)
+        return getattr(controller, method)(**data)
     except AttributeError as ex:
-        raise NotFound()
+        raise NotFound("method not found")
    
 
 def upper(value):

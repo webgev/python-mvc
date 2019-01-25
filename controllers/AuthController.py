@@ -1,4 +1,4 @@
-from mvc.Controller import Controller, api, param, methods
+from mvc.Controller import Controller, param, methods
 from mvc.Auth import AuthManager
 from flask import make_response, jsonify, redirect
 
