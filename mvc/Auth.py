@@ -27,6 +27,7 @@ class AuthModel(Model):
             SqlQuery("delete from `Session` where `session_id` = %s ", [sid])
 
 class Auth():
+    is_auth = None
     def __init__(self):
         self.__model = AuthModel()
 
@@ -48,10 +49,10 @@ class Auth():
         return sid
 
     def IsAuth(self):
-        if self.__model._Read(request.cookies.get("sid")):
-            return True
-
-        return False
+        if self.is_auth is not None:
+            return self.is_auth
+        self.is_auth = bool(self.__model._Read(request.cookies.get("sid")))
+        return self.is_auth
 
     def Exit(self):
         if config.redis:

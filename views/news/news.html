@@ -3,11 +3,17 @@
 
 <h1>News</h1>
 
+{% if user %}
+<a href="{{controller.get_create_url()}}"> добавить </a>
+{% endif %}
+
+
 {% if news %}
 {% for item in news %}
     <p>{{item.title}}</p>
     <p>{{item.date}}</p>
     <p>{{item.text}}</p>
+    <img src="{{item.img}}" />
 {% endfor %}
 {% else %}
 <p>Нет новостей</p>

@@ -79,10 +79,13 @@ class Model:
         
  
     def CheckModel(self, obj):
-        for field in obj:
-            columns = self.table.GetColumns()
-            if field in columns:
-                if columns[field].type is type(obj[field]):
+        columns = self.table.GetColumns()
+        for field in columns:
+            column = columns[field]
+            if column.is_null and not column.default and not column.key:
+                if column.name in obj:
                     continue
-            return False
+                print(column.is_null)
+                return False
+
         return True

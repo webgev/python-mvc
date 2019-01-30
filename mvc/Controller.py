@@ -34,16 +34,12 @@ def param(name, types, require=False):
         return the_wrapper_around_the_original_function
     return my_decorator
     
-def modelparam(name, model, require=None):
+def modelparam():
     def my_decorator(function_to_decorate):
-        def the_wrapper_around_the_original_function(self, **data):
-            if not model or name not in data or type(data.get(name)) is not dict:
-                raise NotFound("param '%s' not found" % (name))
-                
-            if not model.CheckModel(data.get(name)):
-                raise NotFound("param '%s' not model - %s" % (name, str(model)))
-                    
-            return function_to_decorate(self, **data) 
+        def the_wrapper_around_the_original_function(self, **data):   
+            if not self.model.CheckModel(data):
+                raise Exception("param not model - %s" % (str(self.model)))   
+            return function_to_decorate(self, data) 
         return the_wrapper_around_the_original_function
     return my_decorator
 
@@ -69,4 +65,11 @@ class Controller:
 
     def View(self, page, **data):
         user = UserManager().GetCurrent() or {}
-        return render_template(page, menu=get_menu(), active_page=self.controller, user_name=user.get("name", ''), **data)
+        return render_template(
+            page, 
+            menu=get_menu(), 
+            active_page=self.controller, 
+            user=user, 
+            controller=self,
+            **data
+        )

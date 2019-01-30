@@ -49,6 +49,9 @@ class UserRolesModel(Model):
 
 
 class User:
+    user_id = None
+    user = None
+
     def __init__(self):
         self.__user_model = UserModel()
         self.__roles_model = RolesModel()
@@ -59,7 +62,9 @@ class User:
         return False
 
     def GetCurrentUserId(self):
-        return session.get('user_id')
+        if not self.user_id:
+            self.user_id = session.get('user_id')
+        return self.user_id
 
     def GetUserRoles(self):
         return self.__userroles_model.GetUserRoles(user_id)
@@ -68,10 +73,16 @@ class User:
         return self.__user_model.Find(**data)
 
     def GetCurrent(self):
+        if self.user:
+            return self.user
         user_id = self.GetCurrentUserId()
         if user_id:
-            return self.__user_model._Read(user_id)
+            self.user = self.__user_model._Read(user_id)
+            return self.user
 
 manager = None
 def UserManager(): 
-    return manager or User()
+    global manager
+    if not manager:
+        manager = User()
+    return manager

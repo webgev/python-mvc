@@ -1,4 +1,5 @@
 import config
+import log
 import pymysql.cursors
 from datetime import date, datetime
 
@@ -19,9 +20,14 @@ class Connect:
         if Connect.connect:
             Connect.connect.close();
         
-def SqlQuery( query, *data):
+def SqlQuery(query, *data):
     cursor = Connect.connect.cursor()
+    if not config.convert:
+        log.LogMsg("Вызов SQL с данными: " + str(data))
+        log.LogMsg(query.strip())
     cursor.execute(query, data)
+    if not config.convert:
+        log.LogMsg("Конец вызова")
     return cursor.fetchall()
     
 def SqlQueryItem(query, *data):

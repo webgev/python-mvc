@@ -1,30 +1,36 @@
 {% extends "_layout.html" %}
 {% block content %}
 
-<form action="/news/create.html" method="POST" id="create">
+<form  method="POST" id="create">
     <input type="text" name="title" id="title">
+    <input type="file" name="img" id="img">
     <textarea name="text" id="text"></textarea>
+    <button type="submit"> Create </button>
 </form> 
 
 <script type="text/javascript">
     document.getElementById("create").onsubmit = function () {
+        var logoImg = document.getElementById("img").files[0];
+        var formData = new FormData();
+        formData.append('logo', logoImg);
+        formData.append('method', 'News.Create');
+
+        var params = JSON.stringify({
+            "title": document.getElementById("title").value,
+            "text": document.getElementById("text").value
+        })
+        formData.append('params', params)
+
         var settings = {
             "method": "POST",
-            "headers": {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            "body": JSON.stringify({
-                "method": "news.create",
-                "params": {
-                    "title": document.getElementById("title").value,
-                    "text": document.getElementById("text").value
-                }
-            })
+            "body": formData
         }
         
-        
-        fetch('http://localhost:5000/api', settings).then(() => document.location.replace("/"))
+        fetch('/api/', settings).then((res) => {
+            if (res.ok) {
+                //document.location.replace("/news")
+            }
+        })
         return false
     }
 </script>

@@ -7,3 +7,4 @@ debug = True
 
 initDb = False
 redis  = False
+convert = False

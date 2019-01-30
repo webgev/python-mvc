@@ -1,7 +1,8 @@
-from flask import Flask, jsonify, request, render_template, redirect, session
+from flask import Flask, jsonify, request, render_template, redirect, session, Response
 import config
-import os
+import sys, os, json
 import log
+import traceback
 from basic_auth import requires_auth
 from mvc.Errors import NotFound, Warning
 from mvc.Auth import AuthManager
@@ -21,36 +22,49 @@ def authorization():
 
 @app.route('/api/', methods=['POST'])
 def api():
+    controller_name = ""
+    method = ""
     Connect.Connect()
     init_session()
     try:
-        body = request.get_json()
-        params = body["params"] 
+        if request.is_json:
+            body = request.get_json()
+            params = body["params"] 
+        else:
+            body = request.form
+            params = body["params"]
+            params = json.loads(params)
+
         controller_name, method = body["method"].split(".")
         controller = get_controller_class(controller_name)
         if not controller:
-            raise Warning("method not found")
+            raise Warning("method not found controller")
 
         if not hasattr(controller, "api"):
-            raise Warning("method not found")
+            raise Warning("method not found api")
 
         api = getattr(controller, "api")
+        log.LogMsg("вызов api метода: " + controller_name + "." +  method)
         result = request_method(api(), method, **params)
         Connect.CloseConnect()
-        log.LogMsg("вызов api метода: " + controller_name + "." +  method)
-        return jsonify(result = result)
+        log.LogMsg("конец вызова api метода: " + controller_name + "." +  method)
+    
+        return result if type(result) is Response else jsonify(result = result)
     except Exception as ex:
         Connect.CloseConnect()
-        log.ErrorMsg(str(ex))
-        return jsonify(error = str(ex)), 500
+        log.LogMsg("Ошибка вызова api метода: " + controller_name + "." +  method + ": " + str(ex))
+        log.ErrorMsg("Ошибка вызова api метода: " + controller_name + "." +  method + ": " + str(traceback.format_exc()))
+        
+        error = str(traceback.format_exc()) if config.debug else str(ex)
+        return jsonify(error = error), 500
 
     return render_template('secret_page.html')
     
 @app.route('/', defaults={'path': ''},  methods=['GET'])
 @app.route('/<path:path>', methods=['GET'])
 def index(path):
-    start = datetime.now()
     Connect.Connect()
+    print(4)
     init_session()
     try:
         if not path:
@@ -61,11 +75,13 @@ def index(path):
         if not controller:
             Connect.CloseConnect()
             return "404 - no controller"
-        
+
+        log.LogMsg("обрашение к странице: " + path)
         method = rout[1].lower() if len(rout) > 1 and rout[1] else "index"
         result = request_method(controller(), method.lower())
+        log.LogMsg("конец обращения к странице: " + path)
         Connect.CloseConnect()
-        print( str(datetime.now() - start) )
+    
         return "404 - no method" if result == False else result
     except NotFound as ex:
         Connect.CloseConnect()
@@ -86,7 +102,7 @@ def request_method(controller, method, **data):
     try:
         return getattr(controller, method)(**data)
     except AttributeError as ex:
-        raise NotFound("method not found")
+        raise NotFound("method not found: " + method + " " + str(data))
    
 
 def upper(value):
@@ -97,6 +113,7 @@ def raise_error(ex):
         raise ex
 
 def init_session():
+
     if AuthManager().IsAuth():
         sid = request.cookies.get("sid")
         user_id = sid.split("-")[0]

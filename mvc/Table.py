@@ -88,7 +88,7 @@ class Column:
         self.primary = primary
         self.key = "auto_increment" if key else ''
         self.is_null = "NOT NULL" if not is_null else ''
-        self.default = "default(%s)" if default  else ''
+        self.default = "default %s" % (default) if default  else ''
         
     def SetChange(self, value=True):
         self.is_change = value

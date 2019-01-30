@@ -4,8 +4,10 @@
     <meta charset="utf-8" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous" />
     <script type="text/javascript" src="{{ url_for('static', filename='api.js') }}"></script>
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon.png')}}">
 </head>
 <body>
+   
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
         <a class="navbar-brand" href="#">Webgev</a>
@@ -26,8 +28,8 @@
     </nav>
     
     <div class="container">
-      {% if user_name %}
-        <div> {{user_name}}</div>
+      {% if user %}
+        <div> {{user.get("name")}}</div>
         <a href="/auth/exit"> Выход </a>
       {% else %}
         <a href="/auth/"> Войти </a>

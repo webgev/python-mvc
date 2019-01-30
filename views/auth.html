@@ -1,24 +1,33 @@
 {% extends "_layout.html" %}
 {% block content %}
 
-<form method="POST" action="/auth/login" id="login">
-    <input type="text" name="login">
-    <input type="text" name="password">
+<form method="POST" action="/auth/login" id="loginForm">
+    <input type="text" name="login" id="login">
+    <input type="text" name="password" id="password">
     <button type="submit">Enter</button>
 </form>
 <script type="text/javascript">
-    document.getElementById("login").onsubmit = function () {
+    document.getElementById("loginForm").onsubmit = function () {
         var settings = {
             "method": "POST",
             "headers": {
               'Accept': 'application/json',
               'Content-Type': 'application/json'
             },
-            "body": JSON.stringify({"login": "admin","password": "admin"})
+            "body": JSON.stringify({
+                "method": "auth.login",
+                "params": {
+                    "login": document.getElementById("login").value,
+                    "password": document.getElementById("password").value
+                }
+            })
         }
         
-        
-        fetch('http://localhost:5000/auth/login', settings).then(() => document.location.replace("/"))
+        fetch('/api/', settings).then((res)=>{ 
+            if (res.ok) {
+                document.location.replace("/");
+            }
+        })
         return false
     }
 </script>
