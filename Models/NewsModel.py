@@ -23,13 +23,15 @@ class NewsModel(Model):
             params['date'] = datetime.now()
 
         logo = request.files.get('logo')
-        if logo:    
-            if not os.path.exists('static/news'):
-                os.makedirs('static/news')
-
-            logo_path = "static/news/"  + self.__get_img_name(logo.filename)
-            SaveImage(logo, logo_path)
-            params["img"] = "/" + logo_path
+        
+        if logo:   
+            dir_name = '/static/news/' 
+            url  = os.path.dirname(os.path.abspath(__file__)) + '/..' + dir_name
+            if not os.path.exists(url):
+                os.makedirs(url)
+            name = self.__get_img_name(logo.filename)
+            SaveImage(logo, url + name)
+            params["img"] = dir_name + name
 
         self._Create(params)
 

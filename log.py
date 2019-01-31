@@ -3,8 +3,12 @@ from threading import Thread
 from flask import session
 import os
 
-if not os.path.exists('logs'):
-    os.makedirs('logs')
+url = os.path.dirname(os.path.abspath(__file__)) + '/logs/'
+if not os.path.exists(url):
+    os.makedirs(url)
+
+if not os.path.exists('./logs'):
+    os.makedirs('./logs')
 
 def writer(filename, message):
     with open(filename, "a", encoding="utf-8") as fout:
