@@ -13,5 +13,5 @@ var api = function (method, params) {
         })
     };
 
-    return fetch('http://localhost:5000/api/', settings)
+    return fetch('/api/', settings)
 }
