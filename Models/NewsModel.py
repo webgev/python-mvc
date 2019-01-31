@@ -14,6 +14,9 @@ class NewsModel(Model):
         {"name": "img", "type":str, "is_null": True},
         {"name": "date", "type": datetime, "default": 'CURRENT_TIMESTAMP'}
     ]
+    indexs = [
+        {"name": "date", "columns": ["date"], "type": "index"}
+    ]
 
     def Create(self, params):
         if not params.get('date'):

@@ -5,6 +5,8 @@ from Mvc.Table import Table
 class Model:
     table_name = ""
     dbs = None
+    indexs = None
+    foregions = None
     
     def __init__(self):
         self.InitDB()
@@ -12,9 +14,7 @@ class Model:
     def InitDB(self, flag=False):
         if not self.table_name:
             return
-        self.table = Table(self.table_name)
-        for column in self.columns:
-            self.table.AddColumn(**column)
+        self.table = Table(self.table_name, columns = self.columns, indexs=self.indexs, foregions=self.foregions)
             
         if config.initDb or flag:
             self.table.CreateTable()

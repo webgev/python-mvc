@@ -8,6 +8,14 @@ class ProductModel(Model):
         {"name":"name", "type":str},
         {"name":"price", "type":str, "is_null":True}
     ]
+    indexs = [
+        {"name": "name", "columns": ["name"], "type": "index"},
+        {"name": "cat_id", "columns": ["cat_id"], "type": "index"}
+    ]
+
+    foregions = [
+        {"name": "cat_id_link", "column": 'cat_id', "table": 'cat', "link_column": 'id', "ondelete": "cascade"}
+    ]
     
 class CategoryModel(Model):
     table_name = 'cat'
@@ -17,8 +25,9 @@ class CategoryModel(Model):
     ]
 
 class CatalogModel(Model):
-    __product_model = ProductModel()
     __category_model = CategoryModel()
+    __product_model = ProductModel()
+    
        
     def List(self):
         return self.__product_model._List()

@@ -1,6 +1,10 @@
 from datetime import datetime
 from threading import Thread
 from flask import session
+import os
+
+if not os.path.exists('logs'):
+    os.makedirs('logs')
 
 def writer(filename, message):
     with open(filename, "a", encoding="utf-8") as fout:

@@ -4,9 +4,14 @@ class Table:
     name = ''
     primary = ''
     columns = None
-    def __init__(self, name):
+    def __init__(self, name, columns = None, indexs = None, foregions = None):
         self.name = name
         self.columns = {}
+        self.indexs = indexs
+        self.foregions = foregions
+        if columns:
+            for column in columns:
+                self.AddColumn(**column)
         
     def AddColumn(self, name, type, primary=False, key=False, default="", is_null=False, size=None):
         self.columns[name] = Column(name, type, primary, key, default, is_null)
@@ -42,11 +47,15 @@ class Table:
             columns = ",".join(sq_columns),
             primary = ",PRIMARY KEY (`%s`)  " % (primary) if primary else ''
         )
-        
+        print(query)
         SqlQuery(query)
+        
         self.UpdateColumn()
+        self.CreateIndex()
+        self.CreateForegion()
     
     def UpdateColumn(self):
+
         current_columns = SqlQuery("SHOW COLUMNS FROM `{table}`".format(table=self.name))
         current_columns_name = set(column["Field"]  for column in current_columns)
         
@@ -67,7 +76,61 @@ class Table:
                 ))
             
             SqlQuery(query.format(table=self.name, columns=", ".join(arr)))
-                
+        
+
+    def CreateForegion(self):
+        if not self.foregions:
+            return
+        query = ""
+        for foregion in self.foregions:
+            query = """ 
+                ALTER TABLE `{table_name}` 
+                ADD CONSTRAINT `{name}`
+                FOREIGN KEY (`{column}`) REFERENCES `{table}` (`{link_column}`)
+            """.format(
+                table_name = self.name,
+                name = foregion["name"],
+                column = foregion["column"],
+                table = foregion["table"],
+                link_column = foregion["link_column"]
+            )
+            if foregion.get("ondelete"):
+                query +=  """ ON DELETE {} """.format(foregion.get("ondelete"))
+            if foregion.get("onupdate"):
+                query +=  """ ON UPDATE {} """.format(foregion.get("onupdate"))
+            query += "; "
+        print(query)
+        SqlQuery(query)
+
+
+    def CreateIndex(self):
+        if not self.indexs:
+            return
+        query = ""
+        current_indexs = SqlQuery("SHOW INDEX FROM `{table}`".format(table=self.name))
+        current_index_name = set(column["Key_name"]  for column in current_indexs)
+        
+        indexs = list(index["name"] for index in self.indexs)
+
+        new_columns = set(indexs) - current_index_name
+        del_columns = current_index_name - set(indexs)
+        
+        if new_columns:           
+            for index in self.indexs:
+                if index["name"] not in new_columns:
+                    continue
+                query = """ 
+                    ALTER TABLE `{table_name}` 
+                    ADD {type} `{name}` ({columns});
+                """.format(
+                    table_name = self.name,
+                    type = index["type"],
+                    name = index["name"],
+                    columns = ",".join(index["columns"])
+                )
+        if query:
+            SqlQuery(query)        
+        
         
 class Column:
     is_change = False
