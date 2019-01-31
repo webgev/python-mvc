@@ -1,5 +1,5 @@
-from mvc.Model import Model
-from mvc.Sql import SqlQuery
+from Mvc.Model import Model
+from Mvc.Sql import SqlQuery
 from flask import jsonify, request, session
 
 class UserModel(Model):

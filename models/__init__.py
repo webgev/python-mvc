@@ -1,6 +1,6 @@
 names= []
 import importlib
-from mvc.Model import Model
+from Mvc.Model import Model
 from os.path import dirname, basename, isfile
 import glob
 modules = glob.glob(dirname(__file__)+"/*.py")
@@ -11,7 +11,7 @@ models = {}
 for name in names:
     try:
         
-        mod = importlib.import_module("models." + name)
+        mod = importlib.import_module("Models." + name)
         x = dir(mod)    
         for _name in x:
             try:

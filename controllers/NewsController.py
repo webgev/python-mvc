@@ -1,5 +1,5 @@
-from mvc.Controller import Controller, ControllerApi, private, modelparam
-from models.NewsModel import NewsModel 
+from Mvc.Controller import Controller, ControllerApi, private, modelparam
+from Models.NewsModel import NewsModel 
 
 class NewsApi(ControllerApi):
     def __init__(self,):
@@ -11,6 +11,9 @@ class NewsApi(ControllerApi):
     @modelparam()
     def Create(self, params):
         return self.model.Create(params)
+
+    def Delete(self, news_id):
+        self.model._Delete(news_id)
 
 class NewsController(Controller):
     menu_name = "News"

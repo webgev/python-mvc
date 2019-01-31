@@ -7,6 +7,8 @@ class Connect:
     connect = None
     @staticmethod
     def Connect():
+        if Connect.connect:
+            return
         Connect.connect = pymysql.connect(
             host=config.host,
             user=config.user,
@@ -18,9 +20,11 @@ class Connect:
     @staticmethod    
     def CloseConnect():
         if Connect.connect:
-            Connect.connect.close();
+            Connect.connect.close()
+            Connect.connect = None
         
 def SqlQuery(query, *data):
+    Connect.Connect()
     cursor = Connect.connect.cursor()
     if not config.convert:
         log.LogMsg("Вызов SQL с данными: " + str(data))

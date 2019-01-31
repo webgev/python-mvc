@@ -1,4 +1,4 @@
-from mvc.Model import Model
+from Mvc.Model import Model
 
 class ProductModel(Model):
     table_name = 'product'

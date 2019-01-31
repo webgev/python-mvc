@@ -1,5 +1,5 @@
-from models.CatalogModel import CatalogModel
-from mvc.Controller import Controller, ControllerApi, private
+from Models.CatalogModel import CatalogModel
+from Mvc.Controller import Controller, ControllerApi, private
 from flask import jsonify, request
 from basic_auth import auth
 

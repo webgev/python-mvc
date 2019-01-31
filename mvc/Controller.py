@@ -1,7 +1,7 @@
 from flask import jsonify, request, render_template
-from mvc.Errors import NotFound
-from mvc.User import UserManager
-from mvc.Menu import get_menu
+from Mvc.Errors import NotFound
+from Mvc.User import UserManager
+from Mvc.Menu import get_menu
 
 def methods(methods=None):
     def my_decorator(function_to_decorate):

@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, render_template
-from mvc.Controller import Controller
+from Mvc.Controller import Controller
 
 class HomeController(Controller):
     menu_name = "Home"

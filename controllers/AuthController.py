@@ -1,5 +1,5 @@
-from mvc.Controller import Controller, ControllerApi
-from mvc.Auth import AuthManager
+from Mvc.Controller import Controller, ControllerApi
+from Mvc.Auth import AuthManager
 from flask import make_response, jsonify, redirect
 
 class AuthControllerApi(ControllerApi):

@@ -4,15 +4,15 @@ import sys, os, json
 import log
 import traceback
 from basic_auth import requires_auth
-from mvc.Errors import NotFound, Warning
-from mvc.Auth import AuthManager
-from mvc.User import UserManager
-from mvc.Sql import Connect
-from controllers import controllers
+from Mvc.Errors import NotFound, Warning
+from Mvc.Auth import AuthManager
+from Mvc.User import UserManager
+from Mvc.Sql import Connect
+from Controllers import controllers
 
 from datetime import datetime
 
-app = Flask(__name__, template_folder="views")
+app = Flask(__name__, template_folder="Views")
 
     
 @app.route('/auth')
@@ -24,7 +24,6 @@ def authorization():
 def api():
     controller_name = ""
     method = ""
-    Connect.Connect()
     init_session()
     try:
         if request.is_json:
@@ -63,9 +62,8 @@ def api():
 @app.route('/', defaults={'path': ''},  methods=['GET'])
 @app.route('/<path:path>', methods=['GET'])
 def index(path):
-    Connect.Connect()
-    print(4)
     init_session()
+    result = None
     try:
         if not path:
             path = "Home"
@@ -73,22 +71,22 @@ def index(path):
         controller = get_controller_class(rout[0])
        
         if not controller:
-            Connect.CloseConnect()
-            return "404 - no controller"
+            raise NotFound("404 - no controller")
 
         log.LogMsg("обрашение к странице: " + path)
         method = rout[1].lower() if len(rout) > 1 and rout[1] else "index"
         result = request_method(controller(), method.lower())
         log.LogMsg("конец обращения к странице: " + path)
-        Connect.CloseConnect()
-    
-        return "404 - no method" if result == False else result
+        if result == False:
+            raise NotFound("404 - no method")
     except NotFound as ex:
-        Connect.CloseConnect()
-        return render_template('404.html')
+        result = render_template('404.html', message=str(ex))
     except Exception as ex:
         Connect.CloseConnect()
         raise ex
+    
+    Connect.CloseConnect()
+    return result
 
 def get_controller_class(controller):
     try:
@@ -102,7 +100,7 @@ def request_method(controller, method, **data):
     try:
         return getattr(controller, method)(**data)
     except AttributeError as ex:
-        raise NotFound("method not found: " + method + " " + str(data))
+        raise NotFound("error: " + str(controller)+ " " + method + " " + str(data) + " - " + str(ex))
    
 
 def upper(value):

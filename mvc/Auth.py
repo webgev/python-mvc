@@ -1,7 +1,7 @@
-from mvc.Model import Model
-from mvc.User import UserManager
+from Mvc.Model import Model
+from Mvc.User import UserManager
 from flask import request
-from mvc.Sql import SqlQuery
+from Mvc.Sql import SqlQuery
 import uuid
 
 import config
@@ -26,8 +26,15 @@ class AuthModel(Model):
         else:
             SqlQuery("delete from `Session` where `session_id` = %s ", [sid])
 
-class Auth():
+class AuthManager():
     is_auth = None
+    __manager = None
+
+    def __new__(self):
+        if AuthManager.__manager == None:
+            AuthManager.__manager = super().__new__(self)
+        return AuthManager.__manager
+
     def __init__(self):
         self.__model = AuthModel()
 
@@ -64,6 +71,3 @@ class Auth():
 
             self.__model.Delete(sid)
 
-manager = None
-def AuthManager():
-    return manager or Auth()

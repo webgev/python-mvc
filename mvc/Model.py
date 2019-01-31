@@ -1,6 +1,6 @@
 import config
-from mvc.Sql import SqlQuery
-from mvc.Table import Table
+from Mvc.Sql import SqlQuery
+from Mvc.Table import Table
 
 class Model:
     table_name = ""
@@ -76,6 +76,21 @@ class Model:
                 values = ",".join(list("%s" for column in columns))
             )
         , *values)
+
+    def _Delete(self, _id, column_id=None):
+        column_id= column_id or self.table.primary
+        if not column_id:
+            raise Warning("Not primary key!")
+            
+        SqlQuery(""" 
+            DELETE FROM 
+                {table}
+            WHERE 
+                {column_id} = %s
+        """.format(
+            table = self.table.name,
+            column_id=self.table.primary
+        ), _id)
         
  
     def CheckModel(self, obj):

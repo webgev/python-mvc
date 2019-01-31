@@ -9,11 +9,17 @@
 
 
 {% if news %}
+<script type="text/javascript">
+    function delete_new(id) {
+        api("News.Delete", {news_id: id}).then(() => document.location.reload);
+    }
+</script>
 {% for item in news %}
     <p>{{item.title}}</p>
     <p>{{item.date}}</p>
     <p>{{item.text}}</p>
-    <img src="{{item.img}}" />
+    <img src="{{item.img}}" width="150px" />
+    <button onclick="delete_new({{item.id}})" > Удалить </button>
 {% endfor %}
 {% else %}
 <p>Нет новостей</p>

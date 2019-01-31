@@ -9,7 +9,7 @@ controllers = {}
 
 for name in names:
     try:
-        mod = importlib.import_module("controllers." + name)
+        mod = importlib.import_module("Controllers." + name)
         controllers[name] = getattr(mod, name)
     except:
         pass

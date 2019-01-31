@@ -1,4 +1,4 @@
-from mvc.Sql import SqlQuery, Type
+from Mvc.Sql import SqlQuery, Type
 
 class Table:
     name = ''
